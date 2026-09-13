@@ -1,0 +1,25 @@
+{
+	"name": "personal-site-starter",
+	"type": "module",
+	"version": "0.0.1",
+	"scripts": {
+		"dev": "astro dev",
+		"prebuild": "node scripts/prebuild.mjs",
+		"build": "astro build",
+		"preview": "astro preview",
+		"astro": "astro",
+		"gen:favicon": "node scripts/gen-favicon.mjs"
+	},
+	"dependencies": {
+		"@astrojs/mdx": "^4.3.14",
+		"@astrojs/rss": "^4.0.18",
+		"@astrojs/sitemap": "^3.7.2",
+		"astro": "^5.18.1",
+		"mixpanel-browser": "^2.81.0"
+	},
+	"devDependencies": {
+		"esbuild": "^0.28.2",
+		"png-to-ico": "^3.0.2",
+		"sharp": "^0.35.4"
+	}
+}

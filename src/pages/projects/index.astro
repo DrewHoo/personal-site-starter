@@ -1,0 +1,195 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import ProjectGrid from '../../components/ProjectGrid.astro';
+import Divider from '../../components/Divider.astro';
+import { SITE_TITLE, PROJECT_TAGS } from '../../consts';
+
+// Default order: newest repo first, by `created`. The client-side sort toggle
+// below can re-sort the grid by `updated` (recently updated) without a reload.
+const projects = (await getCollection('projects')).sort(
+	(a, b) => b.data.created.valueOf() - a.data.created.valueOf(),
+);
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead
+			title={`projects — ${SITE_TITLE}`}
+				description="Projects, with source code."
+/>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<section class="hero">
+				<h1>Projects</h1>
+				<p class="lede">
+					One card per file in <code>src/content/projects/</code>. Each card links to a site that
+					lives in its own repo and deploys on its own; this page is just the front door.
+				</p>
+</section>
+
+			<Divider />
+
+			<section aria-labelledby="projects-heading">
+				<h2 id="projects-heading" class="sr-only">Projects</h2>
+				<div class="filters" role="group" aria-label="Filter projects by tag">
+					<button type="button" class="filter" data-filter="all" aria-pressed="true">
+						all
+					</button>
+					{
+						PROJECT_TAGS.map((tag) => (
+							<button type="button" class="filter" data-filter={tag} aria-pressed="false">
+								{tag}
+							</button>
+						))
+					}
+				</div>
+				<div class="sort" role="group" aria-label="Sort projects">
+					<span class="sort-label">sort:</span>
+					<button type="button" class="sort-btn" data-sort="created" aria-pressed="true">
+						newest
+					</button>
+					<button type="button" class="sort-btn" data-sort="updated" aria-pressed="false">
+						recently updated
+					</button>
+				</div>
+				<ProjectGrid projects={projects} />
+			</section>
+
+		</main>
+		<Footer />
+
+		<script>
+			const buttons = Array.from(
+				document.querySelectorAll<HTMLButtonElement>('.filter'),
+			);
+			const cards = Array.from(
+				document.querySelectorAll<HTMLLIElement>('.grid > li'),
+			);
+			for (const button of buttons) {
+				button.addEventListener('click', () => {
+					const tag = button.dataset.filter ?? 'all';
+					for (const b of buttons) {
+						b.setAttribute('aria-pressed', String(b === button));
+					}
+					for (const card of cards) {
+						card.hidden =
+							tag !== 'all' &&
+							!(card.dataset.tags ?? '').split('|').includes(tag);
+					}
+				});
+			}
+
+			const grid = document.querySelector<HTMLUListElement>('.grid');
+			const sortButtons = Array.from(
+				document.querySelectorAll<HTMLButtonElement>('.sort-btn'),
+			);
+			for (const button of sortButtons) {
+				button.addEventListener('click', () => {
+					const key = button.dataset.sort === 'updated' ? 'updated' : 'created';
+					for (const b of sortButtons) {
+						b.setAttribute('aria-pressed', String(b === button));
+					}
+					const sorted = [...cards].sort(
+						(a, b) =>
+							Number(b.dataset[key] ?? 0) - Number(a.dataset[key] ?? 0),
+					);
+					for (const card of sorted) grid?.appendChild(card);
+				});
+			}
+		</script>
+	</body>
+</html>
+
+<style>
+	.hero {
+		margin-top: 1rem;
+		margin-bottom: 1.5rem;
+	}
+	.hero h1 {
+		margin-bottom: 0.5em;
+		max-width: 18ch;
+	}
+	.proverb {
+		margin: 0 0 1rem;
+	}
+	.proverb blockquote {
+		margin: 0;
+		padding: 0.1rem 0 0.1rem 1rem;
+		border-left: 4px solid var(--hot);
+	}
+	.proverb blockquote p {
+		margin: 0;
+		font-size: 1.15rem;
+		font-style: italic;
+		max-width: 52ch;
+		color: var(--ink);
+	}
+	.proverb figcaption {
+		margin-top: 0.4rem;
+		padding-left: calc(1rem + 4px);
+		font-family: var(--font-display);
+		font-size: 0.85rem;
+		color: var(--ink-soft);
+	}
+	.lede {
+		font-size: 1.15rem;
+		max-width: 52ch;
+		color: var(--ink-soft);
+	}
+	.filters {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin: 0 0 1.5rem;
+	}
+	.filter {
+		font-family: var(--font-display);
+		font-size: 0.8rem;
+		padding: 0.3em 0.75em;
+		border: 2px solid var(--rule);
+		background-color: var(--paper);
+		color: var(--ink);
+		cursor: pointer;
+	}
+	.filter:hover {
+		background-color: var(--paper-deep);
+	}
+	.filter[aria-pressed='true'] {
+		background-color: var(--acid);
+		color: var(--acid-ink);
+	}
+	.sort {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.5rem;
+		margin: 0 0 1.5rem;
+	}
+	.sort-label {
+		font-family: var(--font-display);
+		font-size: 0.8rem;
+		color: var(--ink-soft);
+	}
+	.sort-btn {
+		font-family: var(--font-display);
+		font-size: 0.8rem;
+		padding: 0.3em 0.75em;
+		border: 2px solid var(--rule);
+		background-color: var(--paper);
+		color: var(--ink);
+		cursor: pointer;
+	}
+	.sort-btn:hover {
+		background-color: var(--paper-deep);
+	}
+	.sort-btn[aria-pressed='true'] {
+		background-color: var(--acid);
+		color: var(--acid-ink);
+	}
+</style>

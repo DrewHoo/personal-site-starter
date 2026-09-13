@@ -1,0 +1,313 @@
+/*
+  THIS STYLESHEET IS A DARE. REPLACE IT.
+
+  Everything below is deliberately hideous so that the second commit to this
+  repo is a redesign. The plumbing is real: every color and font is a custom
+  property in :root, and the components only ever reference the variables.
+  Swap the values, delete the wobble, and the site is yours.
+
+  Sane values, for reference (the palette this started from):
+    --paper: #f2ead3; --paper-deep: #e8dfc0; --ink: #141210; --ink-soft: #3a342e;
+    --rule: #1b1814; --hot: #ff4a1c; --cool: #1d4ed8; --acid: #c5d86d;
+    --card-border: 2px solid var(--rule);
+    body font: a real text face; headings: a real display face.
+  Self-hosting fonts: put woff2 files in public/fonts/ and add @font-face
+  blocks here, plus <link rel="preload"> in src/components/BaseHead.astro.
+*/
+
+:root {
+	--paper: #b3007f;
+	--paper-deep: #8f0066;
+	--ink: #ccff00;
+	--ink-soft: #eaff80;
+	--rule: #ccff00;
+	--hot: #00ffff;
+	--cool: #ffff00;
+	--acid: #ff6600;
+	/* text color for anything sitting on an acid background */
+	--acid-ink: #000000;
+	--card-border: 4px dotted #7fff00;
+
+	--font-body: 'Comic Sans MS', 'Comic Neue', 'Chalkboard SE', 'Comic Sans', cursive;
+	--font-display: Papyrus, 'Party LET', Trattatello, fantasy;
+
+	--shadow-offset: 4px;
+	--shadow-offset-pressed: 2px;
+
+	--measure: 68ch;
+	--container: 980px;
+
+	color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--paper: #ccff00;
+		--paper-deep: #b3e600;
+		--ink: #7a0055;
+		--ink-soft: #99006b;
+		--rule: #7a0055;
+		--hot: #0000ff;
+		--cool: #ff0000;
+		--acid: #ff6600;
+		--card-border: 4px dotted #ff00cc;
+		color-scheme: dark;
+	}
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html {
+	font-size: 18px;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	font-family: var(--font-body);
+	font-size: 1.05rem;
+	line-height: 1.65;
+	color: var(--ink);
+	background-color: var(--paper);
+	word-wrap: break-word;
+	overflow-wrap: break-word;
+	min-height: 100vh;
+	/* the dare: */
+	background-image: repeating-linear-gradient(
+		45deg,
+		transparent 0 28px,
+		rgba(255, 255, 255, 0.08) 28px 32px
+	);
+}
+
+/* The header slowly rocks. prefers-reduced-motion stops it below. */
+body > header {
+	animation: dare-wobble 6s ease-in-out infinite alternate;
+	transform-origin: 50% 0;
+}
+@keyframes dare-wobble {
+	from {
+		transform: rotate(-2deg);
+	}
+	to {
+		transform: rotate(2deg);
+	}
+}
+
+main {
+	max-width: var(--container);
+	margin: 0 auto;
+	padding: 2.5rem 1.25rem 4rem;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-family: var(--font-display);
+	font-weight: 700;
+	line-height: 1.15;
+	margin: 0 0 0.6em;
+	color: var(--ink);
+	letter-spacing: 0.04em;
+	text-shadow: 3px 3px 0 var(--acid);
+}
+
+h1 {
+	font-size: 2.6rem;
+}
+h2 {
+	font-size: 1.9rem;
+}
+h3 {
+	font-size: 1.4rem;
+}
+h4 {
+	font-size: 1.15rem;
+}
+h5,
+h6 {
+	font-size: 1rem;
+}
+
+p {
+	margin: 0 0 1em;
+	max-width: var(--measure);
+}
+
+strong,
+b {
+	font-weight: 700;
+}
+em,
+i {
+	font-style: italic;
+}
+
+a {
+	color: var(--hot);
+	text-decoration: underline wavy;
+	text-decoration-thickness: 2px;
+	text-underline-offset: 3px;
+}
+a:hover {
+	background-color: var(--acid);
+	color: var(--acid-ink);
+	text-decoration-color: var(--acid-ink);
+}
+a:visited {
+	color: var(--cool);
+}
+a:visited:hover {
+	color: var(--acid-ink);
+}
+
+*:focus-visible {
+	outline: 3px solid var(--hot);
+	outline-offset: 2px;
+	border-radius: 2px;
+}
+
+::selection {
+	background-color: var(--acid);
+	color: var(--acid-ink);
+}
+
+code {
+	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+	font-size: 0.9em;
+	padding: 0.1em 0.35em;
+	background-color: var(--paper-deep);
+	border: 1px solid var(--rule);
+	border-radius: 2px;
+}
+
+pre {
+	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+	padding: 1.25em;
+	background-color: var(--paper-deep);
+	border: var(--card-border);
+	box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--rule);
+	overflow-x: auto;
+}
+pre > code {
+	all: unset;
+	font-family: inherit;
+	font-size: 0.9em;
+}
+
+blockquote {
+	margin: 1.5em 0;
+	padding: 0.5em 1em;
+	border-left: 4px solid var(--hot);
+	background-color: var(--paper-deep);
+	font-style: italic;
+}
+
+hr {
+	border: none;
+	height: 1.5rem;
+	margin: 2rem 0;
+	background: none;
+	text-align: center;
+	position: relative;
+}
+hr::before {
+	content: '~ * ~ * ~ * ~';
+	font-family: var(--font-display);
+	font-weight: 700;
+	color: var(--ink-soft);
+	letter-spacing: 0.2em;
+	font-size: 0.9rem;
+}
+
+img {
+	max-width: 100%;
+	height: auto;
+	display: block;
+	border: var(--card-border);
+	box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--rule);
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 1.5em 0;
+}
+th,
+td {
+	padding: 0.5em 0.75em;
+	border-bottom: 1px solid var(--rule);
+	text-align: left;
+}
+th {
+	font-family: var(--font-display);
+	font-weight: 700;
+	border-bottom-width: 2px;
+}
+
+ul,
+ol {
+	padding-left: 1.5em;
+	margin: 0 0 1em;
+	max-width: var(--measure);
+}
+li {
+	margin-bottom: 0.4em;
+}
+
+button,
+input,
+textarea,
+select {
+	font: inherit;
+	color: inherit;
+}
+
+@media (max-width: 720px) {
+	html {
+		font-size: 17px;
+	}
+	h1 {
+		font-size: 2.1rem;
+	}
+	h2 {
+		font-size: 1.6rem;
+	}
+	main {
+		padding: 1.5rem 1rem 3rem;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
+	body > header {
+		animation: none;
+		transform: none;
+	}
+}
+
+.sr-only {
+	border: 0;
+	padding: 0;
+	margin: 0;
+	position: absolute !important;
+	height: 1px;
+	width: 1px;
+	overflow: hidden;
+	clip: rect(1px, 1px, 1px, 1px);
+	clip-path: inset(50%);
+	white-space: nowrap;
+}

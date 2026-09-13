@@ -1,0 +1,44 @@
+import { glob } from 'astro/loaders';
+import { defineCollection, z } from 'astro:content';
+import { PROJECT_TAGS } from './consts';
+
+// Posts are local Markdown/MDX under src/content/blog. (Previously sourced from
+// the Hashnode GraphQL API, which became a paid-only offering in May 2026 — see
+// src/loaders/hashnode.ts, kept for reference but no longer wired up.)
+const blog = defineCollection({
+	loader: glob({ base: './src/content/blog', pattern: '**/*.{md,mdx}' }),
+	schema: z.object({
+		title: z.string(),
+		description: z.string(),
+		pubDate: z.coerce.date(),
+		updatedDate: z.coerce.date().optional(),
+		heroImage: z.string().optional(),
+		// card thumbnail on the blog index when it should differ from the
+		// og:image (heroImage) — e.g. bfme2's box art vs its share card
+		cardImage: z.string().optional(),
+		tags: z.array(z.string()).default([]),
+		aiWritten: z.boolean().default(false),
+	}),
+});
+
+const projects = defineCollection({
+	loader: glob({ base: './src/content/projects', pattern: '**/*.{md,mdx}' }),
+	schema: z.object({
+		title: z.string(),
+		// *single asterisks* in a blurb render as <em> on cards and detail pages
+		blurb: z.string().max(500),
+		liveUrl: z.string().url(),
+		repoUrl: z.string().url().optional(),
+		tags: z.array(z.enum(PROJECT_TAGS)).default([]),
+		stack: z.array(z.string()).default([]),
+		cover: z.string().optional(),
+		coverAlt: z.string().optional(),
+		pinned: z.boolean().default(false),
+		order: z.number().default(0),
+		// repo creation date — the default sort key for the projects grid
+		created: z.coerce.date(),
+		updated: z.coerce.date(),
+	}),
+});
+
+export const collections = { blog, projects };

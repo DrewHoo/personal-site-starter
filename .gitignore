@@ -1,0 +1,21 @@
+# build output
+dist/
+# generated types
+.astro/
+# dependencies
+node_modules/
+# logs
+*.log
+# environment variables
+.env
+.env.production
+# macOS
+.DS_Store
+# editors / agents
+.idea/
+.claude/
+
+# Written by scripts/prebuild.mjs from site.config.mjs on every build.
+public/CNAME
+public/robots.txt
+public/embed/

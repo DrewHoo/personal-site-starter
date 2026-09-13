@@ -1,0 +1,192 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import { getCollection } from 'astro:content';
+import FormattedDate from '../components/FormattedDate.astro';
+
+const posts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead
+			title={SITE_TITLE}
+				description={SITE_DESCRIPTION}
+/>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>Posts</h1>
+			<p class="lede">
+				The post list is the front page. This paragraph is a placeholder: say what the blog is about
+				and who it is for. It lives in <code>src/pages/index.astro</code>.
+			</p>
+
+			{
+				posts.length === 0 ? (
+					<p class="empty">
+						Nothing here yet. The <a href="/projects">projects</a> are over
+						there in the meantime.
+					</p>
+				) : (
+					<ul class="posts" role="list">
+						{posts.map((post) => (
+							<li>
+								<a href={`/blog/${post.id}/`}>
+									<div class="card-text">
+										<h3>{post.data.title}</h3>
+										<p class="date">
+											<FormattedDate date={post.data.pubDate} />
+											{post.data.aiWritten && (
+												<span
+													class="ai-badge"
+													title="The hands-on work and first draft were done by a coding agent, under my direction."
+												>
+													🤖 written by my agent
+												</span>
+											)}
+										</p>
+										<p class="desc">{post.data.description}</p>
+									</div>
+									{(post.data.cardImage ?? post.data.heroImage) && (
+										<img
+											class="card-thumb"
+											src={post.data.cardImage ?? post.data.heroImage}
+											alt=""
+											loading="lazy"
+										/>
+									)}
+								</a>
+							</li>
+						))}
+					</ul>
+				)
+			}
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	.lede {
+		font-size: 1.15rem;
+		max-width: 52ch;
+		color: var(--ink-soft);
+	}
+	.empty {
+		font-size: 1.1rem;
+		color: var(--ink-soft);
+		max-width: 56ch;
+	}
+	.posts {
+		list-style: none;
+		padding: 0;
+		margin: 1.5rem 0 0;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		max-width: none;
+	}
+	.posts li {
+		margin: 0;
+	}
+	.posts a {
+		display: flex;
+		align-items: center;
+		gap: 1.25rem;
+		padding: 1rem 1.25rem;
+		border: var(--card-border);
+		background-color: var(--paper);
+		color: var(--ink);
+		text-decoration: none;
+		box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--rule);
+		transition: transform 120ms ease-out, box-shadow 120ms ease-out;
+	}
+	.card-text {
+		flex: 1;
+		min-width: 0;
+	}
+	.card-thumb {
+		flex-shrink: 0;
+		width: 150px;
+		height: 110px;
+		object-fit: cover;
+		border: 2px solid var(--rule);
+		box-shadow: none;
+	}
+	@media (max-width: 600px) {
+		.card-thumb {
+			width: 92px;
+			height: 92px;
+		}
+		.posts a {
+			gap: 0.9rem;
+		}
+		/* the nowrap badge is wider than the text column next to a thumb, so
+		   give it its own line and let its text wrap. (.date .ai-badge beats
+		   the base .ai-badge rule, which appears later in this stylesheet.) */
+		.date .ai-badge {
+			display: block;
+			width: fit-content;
+			margin-left: 0;
+			margin-top: 0.35rem;
+			white-space: normal;
+			line-height: 1.4;
+		}
+	}
+	.posts a:hover {
+		background-color: var(--paper);
+		transform: translate(2px, 2px);
+		box-shadow: var(--shadow-offset-pressed) var(--shadow-offset-pressed) 0 var(--rule);
+	}
+	.posts h3 {
+		margin: 0 0 0.25rem;
+		font-size: 1.15rem;
+	}
+	.date {
+		margin: 0 0 0.5rem;
+		font-family: var(--font-display);
+		font-size: 0.8rem;
+		color: var(--ink-soft);
+		max-width: none;
+	}
+	.ai-badge {
+		display: inline-block;
+		margin-left: 0.6rem;
+		padding: 0.1em 0.5em;
+		font-size: 0.7rem;
+		letter-spacing: 0.02em;
+		border: 1.5px solid var(--rule);
+		background-color: var(--acid);
+		color: var(--acid-ink);
+		vertical-align: middle;
+		white-space: nowrap;
+	}
+	@media (prefers-color-scheme: dark) {
+		/* no glowing chip in the dark — quiet outline instead */
+		.ai-badge {
+			background-color: transparent;
+			border-color: var(--acid);
+			color: var(--acid);
+		}
+	}
+	.desc {
+		margin: 0;
+		max-width: none;
+		font-size: 0.95rem;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.posts a {
+			transition: none;
+		}
+		.posts a:hover {
+			transform: none;
+		}
+	}
+</style>

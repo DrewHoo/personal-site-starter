@@ -1,0 +1,173 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import { SITE_AUTHOR } from '../consts';
+import site from '../../site.config.mjs';
+
+const giscus = site.giscus.repoId && site.giscus.categoryId ? site.giscus : null;
+
+type Props = CollectionEntry<'blog'>['data'];
+
+const { title, description, pubDate, updatedDate, heroImage, tags, aiWritten } =
+	Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const imageURL = heroImage ? new URL(heroImage, Astro.site).href : undefined;
+const jsonLd = {
+	'@context': 'https://schema.org',
+	'@type': 'BlogPosting',
+	headline: title,
+	description,
+	datePublished: pubDate.toISOString(),
+	...(updatedDate ? { dateModified: updatedDate.toISOString() } : {}),
+	...(imageURL ? { image: imageURL } : {}),
+	author: {
+		'@type': 'Person',
+		name: SITE_AUTHOR,
+		url: new URL('about/', Astro.site).href,
+	},
+	publisher: { '@type': 'Person', name: SITE_AUTHOR },
+	mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalURL.href },
+};
+---
+
+<html lang="en">
+	<head>
+		<BaseHead
+			title={title}
+			description={description}
+			image={heroImage}
+			ogType="article"
+		/>
+		<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<p class="back"><a href="/">← back to the blog</a></p>
+
+			<article
+				data-post-title={title}
+				data-post-tags={(tags ?? []).join(',')}
+				data-post-ai-written={String(aiWritten ?? false)}
+			>
+				<header class="post-head">
+					<p class="date">
+						<FormattedDate date={pubDate} />
+						{
+							updatedDate && (
+								<span class="last-updated">
+									· updated <FormattedDate date={updatedDate} />
+								</span>
+							)
+						}
+					</p>
+					<h1>{title}</h1>
+					<p class="desc">{description}</p>
+					{
+						heroImage && (
+							<img class="hero" width={1020} height={510} src={heroImage} alt="" />
+						)
+					}
+				</header>
+
+				<div class="prose">
+					<slot />
+				</div>
+			</article>
+
+			{
+				giscus && (
+					<section class="comments" aria-label="Comments">
+						<script
+							is:inline
+							src="https://giscus.app/client.js"
+							data-repo={`${site.githubUser}/${site.githubUser}.github.io`}
+							data-repo-id={giscus.repoId}
+							data-category={giscus.category}
+							data-category-id={giscus.categoryId}
+							data-mapping="pathname"
+							data-strict="0"
+							data-reactions-enabled="1"
+							data-emit-metadata="0"
+							data-input-position="bottom"
+							data-theme="preferred_color_scheme"
+							data-lang="en"
+							crossorigin="anonymous"
+							async
+						/>
+					</section>
+				)
+			}
+		</main>
+		<Footer />
+		<script>
+			import { track } from '../scripts/analytics.js';
+
+			const article = document.querySelector('article');
+			if (article instanceof HTMLElement) {
+				track('Post viewed', {
+					slug: location.pathname,
+					title: article.dataset.postTitle,
+					tags: article.dataset.postTags
+						? article.dataset.postTags.split(',')
+						: [],
+					aiWritten: article.dataset.postAiWritten === 'true',
+				});
+			}
+		</script>
+	</body>
+</html>
+
+<style>
+	.back {
+		font-family: var(--font-display);
+		font-size: 0.9rem;
+		margin: 0 0 1.5rem;
+	}
+	.post-head {
+		margin-bottom: 2rem;
+	}
+	.date {
+		font-family: var(--font-display);
+		font-size: 0.85rem;
+		color: var(--ink-soft);
+		margin: 0 0 0.5rem;
+	}
+	.last-updated {
+		font-style: italic;
+	}
+	.desc {
+		font-size: 1.15rem;
+		color: var(--ink-soft);
+		max-width: 56ch;
+	}
+	.hero {
+		margin-top: 1.5rem;
+		width: 100%;
+	}
+	.prose {
+		max-width: var(--measure);
+	}
+	/* On phones, images are capped by screen width and stay modest; on wider
+	   screens they'd fill the full prose column and tower over the text, so
+	   cap their height there instead. 721px matches global.css's breakpoint.
+	   Images may break out past the 68ch text column (centered on it), but
+	   the 100vw term keeps the spill inside the page gutter. */
+	@media (min-width: 721px) {
+		.prose :global(img) {
+			max-height: 60vh;
+			width: auto;
+			max-width: max(100%, min(920px, calc(100vw - 320px)));
+			margin-left: 50%;
+			transform: translateX(-50%);
+		}
+	}
+	.comments {
+		margin-top: 3rem;
+		max-width: var(--measure);
+	}
+</style>
