@@ -19,14 +19,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
-      - run: npm ci
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
       # `prebuild` writes public/CNAME, public/robots.txt, and public/embed/*
       # from site.config.mjs, then `astro build` runs.
-      - run: npm run build
+      - run: pnpm run build
       - uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist

@@ -1,4 +1,4 @@
-// Generate the favicon set. Run: npm run gen:favicon
+// Generate the favicon set. Run: pnpm run gen:favicon
 // Outputs are committed; CI does not regenerate them.
 //   public/favicon.svg          modern browsers
 //   public/favicon.ico          16/32/48 for anything probing the root .ico

@@ -16,7 +16,7 @@ export default {
   description: 'Data visualization projects and occasional writing.',
   author: 'Your Name',
 
-  // Two or three letters for the favicon (npm run gen:favicon).
+  // Two or three letters for the favicon (pnpm run gen:favicon).
   initials: 'yn',
 
   // Mixpanel project token. Public by design (write-only ingestion, no PII).

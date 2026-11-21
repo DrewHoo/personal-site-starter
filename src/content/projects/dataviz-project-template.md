@@ -19,4 +19,4 @@ updated: 2026-09-13
 
 Each project card can carry a longer writeup here, rendered at `/projects/<slug>/`. The card itself needs only the frontmatter.
 
-The cover is `public/projects/<slug>.png` at 1200x750 (8:5). The project template's `npm run gen:og` emits that file as `card.png`; copy it over.
+The cover is `public/projects/<slug>.png` at 1200x750 (8:5). The project template's `pnpm run gen:og` emits that file as `card.png`; copy it over.

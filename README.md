@@ -14,21 +14,21 @@ If you would rather start from a clean Astro project than strip this one, do tha
 4. `src/embeds/` and `scripts/prebuild.mjs`: the back bar, comments, and analytics scripts that project sites load, generated from one config file.
 5. The sibling-site block in `astro.config.mjs`: puts the project sites in your sitemap.
 
-Everything else is replaceable. `npm create astro@latest` and go.
+Everything else is replaceable. `pnpm create astro@latest` and go.
 
 ## Setup
 
 1. **Use this template** on GitHub. The repo name must be `<your-github-username>.github.io`, exactly. That is what makes it a User Site, and a User Site is what owns the domain. Make it public.
-2. Clone it. `npm install`.
+2. Clone it. `pnpm install`.
 3. Edit `site.config.mjs`: your GitHub username, title, description, author, initials. Leave `domain` as `example.com` until you have one; the site serves at `https://<username>.github.io/` in the meantime.
-4. `npm run gen:favicon`, commit the outputs in `public/`.
+4. `pnpm run gen:favicon`, commit the outputs in `public/`.
 5. In the repo's Settings, Pages, set the source to **GitHub Actions**. Or:
 
    ```sh
    gh api -X POST repos/<username>/<username>.github.io/pages -f build_type=workflow
    ```
 
-6. Push. The workflow builds and deploys. `npm run dev` runs it locally at `localhost:4321`.
+6. Push. The workflow builds and deploys. `pnpm run dev` runs it locally at `localhost:4321`.
 
 ### Custom domain
 

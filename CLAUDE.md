@@ -6,5 +6,5 @@
 - The post list is the site root. `/blog` redirects to `/`.
 - `src/styles/global.css` ships deliberately ugly. Every color and font is a custom property at the top of the file; a redesign is a swap of those values, and components only reference the variables.
 - The three embeds in `src/embeds/` are what project sites load with one script tag each. Changing one here changes every project site on the next deploy.
-- Dev server: `npm run dev` (port 4321). `npm run build` runs prebuild first.
+- Dev server: `pnpm run dev` (port 4321). `pnpm run build` runs prebuild first.
 - The `dataviz-pages-site` skill covers building the project sites and registering their cards here.
